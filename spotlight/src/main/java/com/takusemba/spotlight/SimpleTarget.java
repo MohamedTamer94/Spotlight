@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.graphics.Typeface;
+import android.graphics.Color;
 
 /**
  * Position Target
@@ -22,6 +23,7 @@ public class SimpleTarget implements Target {
     private PointF point;
     private float radius;
     private View view;
+    private static Builder builder;
 
     /**
      * Constructor
@@ -60,14 +62,22 @@ public class SimpleTarget implements Target {
         private static final int ABOVE_SPOTLIGHT = 0;
         private static final int BELOW_SPOTLIGHT = 1;
 
-        private String title;
-        private String description;
+        private CharSequence title;
+        private CharSequence description;
+        private Typeface titleTypeface;
+        private Typeface descriptionTypeFace;
+        private int titleFontSize = 24;
+        private int descriptionFontSize = 18;
+        private int titleColor = Color.WHITE;
+        private int descriptionColor = Color.WHITE;
 
         /**
          * Constructor
          */
-        public Builder(@NonNull Activity context) {
+        public Builder(Activity context) {
             super(context);
+
+            builder = this;
         }
 
         /**
@@ -76,7 +86,7 @@ public class SimpleTarget implements Target {
          * @param title title shown on Spotlight
          * @return This Builder
          */
-        public Builder setTitle(String title) {
+        public Builder setTitle(CharSequence title) {
             this.title = title;
             return this;
         }
@@ -87,8 +97,44 @@ public class SimpleTarget implements Target {
          * @param description title shown on Spotlight
          * @return This Builder
          */
-        public Builder setDescription(String description) {
+        public Builder setDescription(CharSequence description) {
             this.description = description;
+            return this;
+        }
+
+        public Builder setTitleTypeFace(Typeface typeFace) {
+            if (typeFace == null) {
+                return this;
+            }
+            titleTypeface = typeFace;
+            return this;
+        }
+        
+        public Builder setDescriptionTypeFace(Typeface typeFace) {
+            if (typeFace == null) {
+                return this;
+            }
+            descriptionTypeFace = typeFace;
+            return this;
+        }
+
+        public Builder setTitleFontSize(int size) {
+            titleFontSize = size;
+            return this;
+        }
+        
+        public Builder setDescriptionFontSize(int size) {
+            descriptionFontSize = size;
+            return this;
+        }
+
+        public Builder setTitleColor(int argb) {
+            titleColor = argb;
+            return this;
+        }
+        
+        public Builder setDescriptionColor(int argb) {
+            descriptionColor = argb;
             return this;
         }
 
@@ -102,18 +148,42 @@ public class SimpleTarget implements Target {
             if (getContext() == null) {
                 throw new RuntimeException("context is null");
             }
-            View view = getContext().getLayoutInflater().inflate(R.layout.layout_spotlight, null);
-            ((TextView) view.findViewById(R.id.title)).setText(title);
-            ((TextView) view.findViewById(R.id.description)).setText(description);
+            LinearLayout layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            //layout.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
+            LinearLayout container = new LinearLayout(getContext());
+            container.setOrientation(LinearLayout.VERTICAL);
+            //container.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
+            layout.addView(container);
+            TextView titleTv = new TextView(getContext());
+            titleTv.setTextSize(titleFontSize);
+            if (titleTypeface != null) {
+                titleTv.setTypeface(titleTypeface, Typeface.BOLD);
+            } else {
+                titleTv.setTypeface(null, Typeface.BOLD);
+            }
+            titleTv.setTextColor(titleColor);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-2, -2);
+            params.setMargins(0, 0, 0, 16);
+            container.addView(titleTv, params);
+            TextView descriptionTv = new TextView(getContext());
+            descriptionTv.setTextSize(descriptionFontSize);
+            descriptionTv.setTextColor(descriptionColor);
+            if (descriptionTypeFace != null) {
+              descriptionTv.setTypeface(descriptionTypeFace);
+            }
+            container.addView(descriptionTv);
+            titleTv.setText(title);
+            descriptionTv.setText(description);
             PointF point = new PointF(startX, startY);
-            calculatePosition(point, radius, view);
-            return new SimpleTarget(point, radius, view);
+            calculatePosition(point, radius, layout, container);
+            return new SimpleTarget(point, radius, layout);
         }
 
         /**
          * calculate the position of title and description based off of where the spotlight reveals
          */
-        private void calculatePosition(final PointF point, final float radius, View spotlightView) {
+        private void calculatePosition(final PointF point, final float radius, View spotlightView, LinearLayout container) {
             float[] areas = new float[2];
             Point screenSize = new Point();
             ((WindowManager) spotlightView.getContext()
@@ -129,7 +199,7 @@ public class SimpleTarget implements Target {
                 largest = BELOW_SPOTLIGHT;
             }
 
-            final LinearLayout layout = ((LinearLayout) spotlightView.findViewById(R.id.container));
+            final LinearLayout layout = container;
             layout.setPadding(100, 0, 100, 0);
             switch (largest) {
                 case ABOVE_SPOTLIGHT:
