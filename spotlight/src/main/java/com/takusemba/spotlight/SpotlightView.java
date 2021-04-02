@@ -9,13 +9,10 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.support.annotation.AttrRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.graphics.Color;
 
 /**
  * Spotlight View
@@ -23,13 +20,14 @@ import android.widget.FrameLayout;
  * @author takusemba
  * @since 26/06/2017
  **/
-class SpotlightView extends FrameLayout {
+public class SpotlightView extends FrameLayout {
 
     private final Paint paint = new Paint();
     private final Paint spotPaint = new Paint();
     private PointF point = new PointF();
     private ValueAnimator animator;
     private OnSpotlightStateChangedListener listener;
+    private int maskColor = Color.parseColor("#E6000000");
 
     /**
      * Listener to control Target state
@@ -53,18 +51,17 @@ class SpotlightView extends FrameLayout {
         this.listener = l;
     }
 
-    public SpotlightView(@NonNull Context context) {
+    public SpotlightView(Context context) {
         super(context, null);
         init();
     }
 
-    public SpotlightView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SpotlightView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
         init();
     }
 
-    public SpotlightView(@NonNull Context context, @Nullable AttributeSet attrs,
-                         @AttrRes int defStyleAttr) {
+    public SpotlightView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -95,11 +92,15 @@ class SpotlightView extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setColor(ContextCompat.getColor(getContext(), R.color.background));
+        paint.setColor(maskColor);
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
         if (animator != null) {
             canvas.drawCircle(point.x, point.y, (float) animator.getAnimatedValue(), spotPaint);
         }
+    }
+
+    public void setMaskColor(int maskColor) {
+        this.maskColor = maskColor;
     }
 
     /**
