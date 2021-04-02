@@ -50,10 +50,5 @@ public interface Target {
         public View getView() {
             return null;
         }
-
-        @Override
-        public void recalculate() {
-            // don't do anything
-        }
     };
 }
