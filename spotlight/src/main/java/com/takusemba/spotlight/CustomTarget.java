@@ -2,7 +2,6 @@ package com.takusemba.spotlight;
 
 import android.app.Activity;
 import android.graphics.PointF;
-import android.support.annotation.LayoutRes;
 import android.view.View;
 
 /**
@@ -16,6 +15,7 @@ public class CustomTarget implements Target {
     private PointF point;
     private float radius;
     private View view;
+    private static Builder builder;
 
     /**
      * Constructor
@@ -58,20 +58,8 @@ public class CustomTarget implements Target {
          */
         public Builder(Activity context) {
             super(context);
-        }
 
-        /**
-         * Set the custom view shown on Spotlight
-         *
-         * @param layoutId layout id shown on Spotlight
-         * @return This Builder
-         */
-        public Builder setView(@LayoutRes int layoutId) {
-            if (getContext() == null) {
-                throw new RuntimeException("context is null");
-            }
-            this.view = getContext().getLayoutInflater().inflate(layoutId, null);
-            return this;
+            builder = this;
         }
 
         /**
