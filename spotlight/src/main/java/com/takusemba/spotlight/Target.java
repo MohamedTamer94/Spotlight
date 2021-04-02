@@ -9,7 +9,7 @@ import android.view.View;
  * @author takusemba
  * @since 26/06/2017
  **/
-interface Target {
+public interface Target {
 
     /**
      * gets the point of this Target
@@ -49,6 +49,11 @@ interface Target {
         @Override
         public View getView() {
             return null;
+        }
+
+        @Override
+        public void recalculate() {
+            // don't do anything
         }
     };
 }
