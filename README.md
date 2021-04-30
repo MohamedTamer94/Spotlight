@@ -98,6 +98,9 @@ Clone this repo and check out the [app](https://github.com/TakuSemba/Spotlight/t
     * **Twitter** - (https://twitter.com/takusemba)
     * **Facebook** - (https://www.facebook.com/takusemba)
 
+* **Mohamed Tamer**
+* Now maintaining the repo
+
 ## Licence
 ```
 Copyright 2017 Taku Semba.
